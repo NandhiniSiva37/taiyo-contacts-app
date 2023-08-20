@@ -4,6 +4,7 @@ import { saveContact, editContact } from "../../redux/reducer";
 
 function Dialog(props: any) {
   const dispatch = useDispatch();
+  const [nameErr, setNameErr] = useState(false);
   const [contactData, setContactData] = useState({
     firstName: props.data.firstName,
     lastName: props.data.lastName,
@@ -11,13 +12,16 @@ function Dialog(props: any) {
   });
 
   const handleSaveContact = () => {
-    if (props.data.id !== "") {
-      dispatch(editContact({ index: props.data.id, contactData }));
+    if (contactData?.firstName) {
+      if (props.data.id !== "") {
+        dispatch(editContact({ index: props.data.id, contactData }));
+      } else {
+        dispatch(saveContact(contactData));
+      }
+      props.handleYes();
     } else {
-      dispatch(saveContact(contactData));
+      setNameErr(true);
     }
-
-    props.handleYes();
   };
 
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,13 +109,19 @@ function Dialog(props: any) {
                           </label>
                         </div>
                       </div>
+                      {nameErr && (
+                        <span className="text-red text-xs">
+                          First Name is required
+                        </span>
+                      )}
                       <button
+                        type="button"
                         className="px-2 py-1.5 mt-4 bg-blue text-white text-sm rounded w-[8rem] "
                         onClick={() => handleSaveContact()}
                       >
                         {props.data.id !== ""
-                          ? "Save Contact"
-                          : "Save Editted Contact"}
+                          ? "Save Editted Contact"
+                          : "Save Contact"}
                       </button>
                     </div>
                   </div>
